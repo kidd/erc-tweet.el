@@ -72,9 +72,7 @@
 	  (with-temp-buffer
 	    (insert "[tweet] - ")
 	    (yank)
-	    (buffer-string)))
-
-	)
+	    (buffer-string))))
 	(put-text-property (point-min) (point-max) 'read-only t)))))
 
 (defun erc-tweet-show-tweet ()
