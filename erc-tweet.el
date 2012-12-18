@@ -29,12 +29,17 @@
   "Enable tweet."
   :group 'erc)
 
-(defcustom erc-tweet-regex "https?://tweeter.com/.+/status/[0-9]+"
+(defcustom erc-tweet-regex "https?://twitter.com/.+/status/[0-9]+"
   "Regex to mach URLs to be downloaded"
   :group 'erc-tweet
   :type '(regexp :tag "Regex"))
 
-(defun erc-tweet  (status marker)
+(defun erc-strip-tags (str)
+  "Strip tags in a regex. Naive, I know."
+  (replace-regexp-in-string "<.+?>" "" str))
+
+(defun erc-tweet (status marker)
+  (interactive)
   (goto-char (point-min))
   (search-forward "js-tweet-text tweet-text \">")
   (push-mark (point))
@@ -49,10 +54,13 @@
       (let ((inhibit-read-only t))
 	(goto-char (marker-position marker))
 	(insert-before-markers
-	 (with-temp-buffer
-	   (insert "[twit] - ")
-	   (yank)
-	   (buffer-string)))
+	 (strip-tags
+	  (with-temp-buffer
+	    (insert "[tweet] - ")
+	    (yank)
+	    (buffer-string)))
+
+	)
 	(put-text-property (point-min) (point-max) 'read-only t)))))
 
 (defun erc-tweet-show-tweet ()
