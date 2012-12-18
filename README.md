@@ -1,6 +1,6 @@
 # erc-tweet.el #
 
-Show inlined tweets (png/jpg) in erc buffers.
+Show inlined tweets in erc buffers.
 
 usage:
 
