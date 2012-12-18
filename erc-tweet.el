@@ -1,4 +1,4 @@
-;;; erc-twitt.el --- shows text of a twitt when an url is posted in erc buffers
+;;; erc-tweet.el --- shows text of a tweet when an url is posted in erc buffers
 
 ;; Copyright (C) 2012  Raimon Grau
 
@@ -25,16 +25,16 @@
 (require 'erc)
 (require 'url-queue)
 
-(defgroup erc-twitt nil
-  "Enable twitt."
+(defgroup erc-tweet nil
+  "Enable tweet."
   :group 'erc)
 
-(defcustom erc-twitt-regex "https?://twitter.com/.+/status/[0-9]+"
+(defcustom erc-tweet-regex "https?://tweeter.com/.+/status/[0-9]+"
   "Regex to mach URLs to be downloaded"
-  :group 'erc-twitt
+  :group 'erc-tweet
   :type '(regexp :tag "Regex"))
 
-(defun erc-twitt  (status marker)
+(defun erc-tweet  (status marker)
   (goto-char (point-min))
   (search-forward "js-tweet-text tweet-text \">")
   (push-mark (point))
@@ -55,26 +55,26 @@
 	   (buffer-string)))
 	(put-text-property (point-min) (point-max) 'read-only t)))))
 
-(defun erc-twitt-show-twitt ()
+(defun erc-tweet-show-tweet ()
   (interactive)
   (goto-char (point-min))
   (search-forward "http" nil t)
   (let ((url (thing-at-point 'url)))
-    (when (and url (string-match erc-twitt-regex url))
+    (when (and url (string-match erc-tweet-regex url))
       (goto-char (point-max))
       (url-queue-retrieve url
-			  'erc-twitt
+			  'erc-tweet
 			  (list
 			   (point-marker))
 			  t))))
 
 
-(define-erc-module twitt nil
+(define-erc-module tweet nil
   "Display inlined twits in ERC buffer"
-  ((add-hook 'erc-insert-modify-hook 'erc-twitt-show-twitt t)
-   (add-hook 'erc-send-modify-hook 'erc-twitt-show-twitt t))
-  ((remove-hook 'erc-insert-modify-hook 'erc-twitt-show-url-twitt)
-   (remove-hook 'erc-send-modify-hook 'erc-twitt-show-url-twitt))
+  ((add-hook 'erc-insert-modify-hook 'erc-tweet-show-tweet t)
+   (add-hook 'erc-send-modify-hook 'erc-tweet-show-tweet t))
+  ((remove-hook 'erc-insert-modify-hook 'erc-tweet-show-url-tweet)
+   (remove-hook 'erc-send-modify-hook 'erc-tweet-show-url-tweet))
   t)
 
 
@@ -82,5 +82,5 @@
 
 
 
-(provide 'erc-twitt)
-;;; erc-twitt.el ends here
+(provide 'erc-tweet)
+;;; erc-tweet.el ends here
