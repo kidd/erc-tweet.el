@@ -3,6 +3,8 @@
 ;; Copyright (C) 2012  Raimon Grau
 
 ;; Author: Raimon Grau <raimonster@gmail.com>
+;; Version: 0.9
+;; Package-Requires: ((url-queue "1"))
 ;; Keywords: extensions
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -19,22 +21,24 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
+;;
 ;; Show inlined tweets in erc buffers.
-
+;;
+;;; Installation:
+;;
 ;; usage:
-
-;; ```lisp
+;;
 ;; (require 'erc-tweet)
 ;; (add-to-list 'erc-modules 'tweet)
 ;; (erc-update-modules)
-;; ```
-
+;;
 ;; Or `(require 'erc-tweet)` and  `M-x customize-option erc-modules RET`
-
+;;
 ;; This plugin subscribes to hooks `erc-insert-modify-hook` and
 ;; `erc-send-modify-hook` to download and show tweets.
-;;
+
+
+;;; Code:
 
 (require 'erc)
 (require 'url-queue)
@@ -89,6 +93,7 @@
 			  t))))
 
 
+;;;###autoload
 (define-erc-module tweet nil
   "Display inlined twits in ERC buffer"
   ((add-hook 'erc-insert-modify-hook 'erc-tweet-show-tweet t)
