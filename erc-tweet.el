@@ -72,7 +72,7 @@
       (let ((inhibit-read-only t))
 	(goto-char (marker-position marker))
 	(insert-before-markers
-	 (strip-tags
+	 (erc-strip-tags
 	  (with-temp-buffer
 	    (insert "[tweet] - ")
 	    (yank)
