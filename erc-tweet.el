@@ -4,7 +4,6 @@
 
 ;; Author: Raimon Grau <raimonster@gmail.com>
 ;; Version: 0.9
-;; Package-Requires: ((url-queue "1"))
 ;; Keywords: extensions
 
 ;; This program is free software; you can redistribute it and/or modify
