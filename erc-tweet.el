@@ -97,8 +97,8 @@
   "Display inlined twits in ERC buffer"
   ((add-hook 'erc-insert-modify-hook 'erc-tweet-show-tweet t)
    (add-hook 'erc-send-modify-hook 'erc-tweet-show-tweet t))
-  ((remove-hook 'erc-insert-modify-hook 'erc-tweet-show-url-tweet)
-   (remove-hook 'erc-send-modify-hook 'erc-tweet-show-url-tweet))
+  ((remove-hook 'erc-insert-modify-hook 'erc-tweet-show-tweet)
+   (remove-hook 'erc-send-modify-hook 'erc-tweet-show-tweet))
   t)
 
 
