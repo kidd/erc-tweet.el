@@ -59,7 +59,7 @@
 (defun erc-tweet (status marker)
   (interactive)
   (goto-char (point-min))
-  (search-forward "js-tweet-text tweet-text \">")
+  (search-forward "js-tweet-text tweet-text\">")
   (push-mark (point))
   (search-forward "
 
