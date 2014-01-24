@@ -37,7 +37,6 @@
 ;; This plugin subscribes to hooks `erc-insert-modify-hook` and
 ;; `erc-send-modify-hook` to download and show tweets.
 
-
 ;;; Code:
 
 (require 'erc)
@@ -66,18 +65,17 @@
 ")
   (backward-char)
   (kill-region (mark) (point))
-
   (with-current-buffer (marker-buffer marker)
     (save-excursion
       (let ((inhibit-read-only t))
-	(goto-char (marker-position marker))
-	(insert-before-markers
-	 (erc-strip-tags
-	  (with-temp-buffer
-	    (insert "[tweet] - ")
-	    (yank)
-	    (buffer-string))))
-	(put-text-property (point-min) (point-max) 'read-only t)))))
+        (goto-char (marker-position marker))
+        (insert-before-markers
+         (erc-strip-tags
+          (with-temp-buffer
+            (insert "[tweet] - ")
+            (yank)
+            (buffer-string))))
+        (put-text-property (point-min) (point-max) 'read-only t)))))
 
 (defun erc-tweet-show-tweet ()
   (interactive)
@@ -87,11 +85,10 @@
     (when (and url (string-match erc-tweet-regex url))
       (goto-char (point-max))
       (url-queue-retrieve url
-			  'erc-tweet
-			  (list
-			   (point-marker))
-			  t))))
-
+                          'erc-tweet
+                          (list
+                           (point-marker))
+                          t))))
 
 ;;;###autoload
 (eval-after-load 'erc
@@ -103,10 +100,7 @@
       (remove-hook 'erc-send-modify-hook 'erc-tweet-show-tweet))
      t))
 
-
 ;;; Code:
-
-
 
 (provide 'erc-tweet)
 ;;; erc-tweet.el ends here
