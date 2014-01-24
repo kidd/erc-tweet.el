@@ -46,7 +46,7 @@
   "Enable tweet."
   :group 'erc)
 
-(defcustom erc-tweet-regex "https?://twitter.com/.+/status/[0-9]+"
+(defcustom erc-tweet-regex "https?://\\(?:.*\\)?twitter.com/.+/status/[0-9]+"
   "Regex to mach URLs to be downloaded"
   :group 'erc-tweet
   :type '(regexp :tag "Regex"))
@@ -78,12 +78,18 @@
               (buffer-string))))
           (put-text-property pt-before (point) 'read-only t))))))
 
+(defun erc-tweet-correct-url (url)
+  "Change the url to go to the non-mobile site."
+  (when (and url (string-match erc-tweet-regex url))
+    ;; go to the non-mobile tweet
+    (replace-regexp-in-string "mobile\." "" url)))
+
 (defun erc-tweet-show-tweet ()
   (interactive)
   (goto-char (point-min))
   (search-forward "http" nil t)
-  (let ((url (thing-at-point 'url)))
-    (when (and url (string-match erc-tweet-regex url))
+  (let ((url (erc-tweet-correct-url (thing-at-point 'url))))
+    (when url
       (goto-char (point-max))
       (url-queue-retrieve url
                           'erc-tweet
