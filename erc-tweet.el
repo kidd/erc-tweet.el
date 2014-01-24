@@ -66,6 +66,8 @@
     (backward-char)
     (buffer-substring-no-properties pt-before (point))))
 
+(defvar erc-tweet-cleanup-text 'erc-strip-tags)
+
 (defun erc-tweet (status marker)
   (interactive)
   (let ((tweet-text (erc-tweet-text)))
@@ -75,7 +77,7 @@
           (goto-char (marker-position marker))
           (let ((pt-before (point)))
             (insert-before-markers
-             (erc-strip-tags (concat "[tweet] - " tweet-text)))
+             "[tweet] - " (funcall erc-tweet-cleanup-text tweet-text))
             (put-text-property pt-before (point) 'read-only t)))))))
 
 (defun erc-tweet-correct-url (url)
