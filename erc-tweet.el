@@ -90,11 +90,10 @@
   (search-forward "http" nil t)
   (let ((url (erc-tweet-correct-url (thing-at-point 'url))))
     (when url
-      (goto-char (point-max))
       (url-queue-retrieve url
                           'erc-tweet
                           (list
-                           (point-marker))
+                           (point-max-marker))
                           t))))
 
 ;;;###autoload
