@@ -55,28 +55,28 @@
   "Strip tags in a regex. Naive, I know."
   (replace-regexp-in-string "<.+?>" "" str))
 
-(defun erc-tweet (status marker)
-  (interactive)
+(defun erc-tweet-text ()
+  "Extract the tweet text from the retrieved HTML"
   (goto-char (point-min))
   (search-forward "js-tweet-text tweet-text\">")
-  (push-mark (point))
-  (search-forward "
+  (let ((pt-before (point)))
+    (search-forward "
 
 ")
-  (backward-char)
-  (kill-region (mark) (point))
-  (with-current-buffer (marker-buffer marker)
-    (save-excursion
-      (let ((inhibit-read-only t))
-        (goto-char (marker-position marker))
-        (let ((pt-before (point)))
-          (insert-before-markers
-           (erc-strip-tags
-            (with-temp-buffer
-              (insert "[tweet] - ")
-              (yank)
-              (buffer-string))))
-          (put-text-property pt-before (point) 'read-only t))))))
+    (backward-char)
+    (buffer-substring-no-properties pt-before (point))))
+
+(defun erc-tweet (status marker)
+  (interactive)
+  (let ((tweet-text (erc-tweet-text)))
+    (with-current-buffer (marker-buffer marker)
+      (save-excursion
+        (let ((inhibit-read-only t))
+          (goto-char (marker-position marker))
+          (let ((pt-before (point)))
+            (insert-before-markers
+             (erc-strip-tags (concat "[tweet] - " tweet-text)))
+            (put-text-property pt-before (point) 'read-only t)))))))
 
 (defun erc-tweet-correct-url (url)
   "Change the url to go to the non-mobile site."
