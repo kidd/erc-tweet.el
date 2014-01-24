@@ -69,13 +69,14 @@
     (save-excursion
       (let ((inhibit-read-only t))
         (goto-char (marker-position marker))
-        (insert-before-markers
-         (erc-strip-tags
-          (with-temp-buffer
-            (insert "[tweet] - ")
-            (yank)
-            (buffer-string))))
-        (put-text-property (point-min) (point-max) 'read-only t)))))
+        (let ((pt-before (point)))
+          (insert-before-markers
+           (erc-strip-tags
+            (with-temp-buffer
+              (insert "[tweet] - ")
+              (yank)
+              (buffer-string))))
+          (put-text-property pt-before (point) 'read-only t))))))
 
 (defun erc-tweet-show-tweet ()
   (interactive)
