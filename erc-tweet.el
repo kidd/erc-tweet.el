@@ -37,7 +37,6 @@
 ;; This plugin subscribes to hooks `erc-insert-modify-hook` and
 ;; `erc-send-modify-hook` to download and show tweets.
 
-
 ;;; Code:
 
 (require 'erc)
@@ -47,7 +46,7 @@
   "Enable tweet."
   :group 'erc)
 
-(defcustom erc-tweet-regex "https?://twitter.com/.+/status/[0-9]+"
+(defcustom erc-tweet-regex "https?://\\(?:.*\\)?twitter.com/.+/status/[0-9]+"
   "Regex to mach URLs to be downloaded"
   :group 'erc-tweet
   :type '(regexp :tag "Regex"))
@@ -56,42 +55,48 @@
   "Strip tags in a regex. Naive, I know."
   (replace-regexp-in-string "<.+?>" "" str))
 
-(defun erc-tweet (status marker)
-  (interactive)
+(defun erc-tweet-text ()
+  "Extract the tweet text from the retrieved HTML"
   (goto-char (point-min))
   (search-forward "js-tweet-text tweet-text\">")
-  (push-mark (point))
-  (search-forward "
+  (let ((pt-before (point)))
+    (search-forward "
 
 ")
-  (backward-char)
-  (kill-region (mark) (point))
+    (backward-char)
+    (buffer-substring-no-properties pt-before (point))))
 
-  (with-current-buffer (marker-buffer marker)
-    (save-excursion
-      (let ((inhibit-read-only t))
-	(goto-char (marker-position marker))
-	(insert-before-markers
-	 (erc-strip-tags
-	  (with-temp-buffer
-	    (insert "[tweet] - ")
-	    (yank)
-	    (buffer-string))))
-	(put-text-property (point-min) (point-max) 'read-only t)))))
+(defvar erc-tweet-cleanup-text 'erc-strip-tags)
+
+(defun erc-tweet (status marker)
+  (interactive)
+  (let ((tweet-text (erc-tweet-text)))
+    (with-current-buffer (marker-buffer marker)
+      (save-excursion
+        (let ((inhibit-read-only t))
+          (goto-char (marker-position marker))
+          (let ((pt-before (point)))
+            (insert-before-markers
+             "[tweet] - " (funcall erc-tweet-cleanup-text tweet-text))
+            (put-text-property pt-before (point) 'read-only t)))))))
+
+(defun erc-tweet-correct-url (url)
+  "Change the url to go to the non-mobile site."
+  (when (and url (string-match erc-tweet-regex url))
+    ;; go to the non-mobile tweet
+    (replace-regexp-in-string "mobile\." "" url)))
 
 (defun erc-tweet-show-tweet ()
   (interactive)
   (goto-char (point-min))
   (search-forward "http" nil t)
-  (let ((url (thing-at-point 'url)))
-    (when (and url (string-match erc-tweet-regex url))
-      (goto-char (point-max))
+  (let ((url (erc-tweet-correct-url (thing-at-point 'url))))
+    (when url
       (url-queue-retrieve url
-			  'erc-tweet
-			  (list
-			   (point-marker))
-			  t))))
-
+                          'erc-tweet
+                          (list
+                           (point-max-marker))
+                          t))))
 
 ;;;###autoload
 (eval-after-load 'erc
@@ -103,10 +108,7 @@
       (remove-hook 'erc-send-modify-hook 'erc-tweet-show-tweet))
      t))
 
-
 ;;; Code:
-
-
 
 (provide 'erc-tweet)
 ;;; erc-tweet.el ends here
