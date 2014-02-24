@@ -46,7 +46,7 @@
   "Enable tweet."
   :group 'erc)
 
-(defcustom erc-tweet-regex "https?://\\(?:.*\\)?twitter.com/.+/status/[0-9]+"
+(defcustom erc-tweet-regex "https?://\\(?:[^/]*\\)?twitter.com/.+/status/[0-9]+"
   "Regex to mach URLs to be downloaded"
   :group 'erc-tweet
   :type '(regexp :tag "Regex"))
