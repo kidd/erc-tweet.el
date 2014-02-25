@@ -51,7 +51,7 @@
   :group 'erc-tweet
   :type '(regexp :tag "Regex"))
 
-(defun erc-strip-tags (str)
+(defun erc-tweet-strip-tags (str)
   "Strip tags in a regex. Naive, I know."
   (replace-regexp-in-string "<.+?>" "" str))
 
@@ -66,7 +66,7 @@
     (backward-char)
     (buffer-substring-no-properties pt-before (point))))
 
-(defvar erc-tweet-cleanup-text 'erc-strip-tags)
+(defvar erc-tweet-cleanup-text 'erc-tweet-strip-tags)
 
 (defun erc-tweet (status marker)
   (interactive)
