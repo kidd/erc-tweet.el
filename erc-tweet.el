@@ -64,7 +64,7 @@
 
 ")
     (backward-char)
-    (buffer-substring-no-properties pt-before (point))))
+    (string-as-multibyte (buffer-substring-no-properties pt-before (point)))))
 
 (defvar erc-tweet-cleanup-text 'erc-tweet-strip-tags)
 
