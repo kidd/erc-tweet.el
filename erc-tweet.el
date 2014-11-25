@@ -58,7 +58,7 @@
 (defun erc-tweet-text ()
   "Extract the tweet text from the retrieved HTML"
   (goto-char (point-min))
-  (search-forward "js-tweet-text tweet-text\">")
+  (search-forward-regexp "js-tweet-text tweet-text[^>]*>")
   (let ((pt-before (point)))
     (search-forward "
 
