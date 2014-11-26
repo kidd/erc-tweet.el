@@ -68,17 +68,38 @@
 
 (defvar erc-tweet-cleanup-text 'erc-tweet-strip-tags)
 
-(defun erc-tweet (status marker)
+
+(defun erc-tweet-insert (msg marker)
+  "Insert MSG before MARKER."
+  (with-current-buffer (marker-buffer marker)
+    (save-excursion
+      (let ((inhibit-read-only t))
+        (goto-char (marker-position marker))
+        (let ((pt-before (point)))
+          (insert-before-markers msg)
+          (put-text-property pt-before (point) 'read-only t))))))
+
+(defun erc-tweet-error (error-info marker)
+  "Insert error text from ERROR-INFO before MARKER."
+  (let* ((name (car error-info))
+         (data (cadr error-info))
+         (msg (format "[tweet/%s] - %s\n" name data)))
+    (erc-tweet-insert msg marker)))
+
+(defun erc-tweet-callback (status marker)
+  "Callback function for url-queue-retrieve."
   (interactive)
-  (let ((tweet-text (erc-tweet-text)))
-    (with-current-buffer (marker-buffer marker)
-      (save-excursion
-        (let ((inhibit-read-only t))
-          (goto-char (marker-position marker))
-          (let ((pt-before (point)))
-            (insert-before-markers
-             "[tweet] - " (funcall erc-tweet-cleanup-text tweet-text))
-            (put-text-property pt-before (point) 'read-only t)))))))
+  (let ((error-info (plist-get status :error)))
+    (cond (error-info
+           (erc-tweet-error error-info marker))
+          (t (erc-tweet marker)))))
+
+(defun erc-tweet (marker)
+  "Extract the tweet text and insert before MARKER."
+  (let* ((tweet-text (erc-tweet-text))
+         (msg (concat "[tweet] - "
+                      (funcall erc-tweet-cleanup-text tweet-text))))
+    (erc-tweet-insert msg marker)))
 
 (defun erc-tweet-correct-url (url)
   "Change the url to go to the non-mobile site."
@@ -93,7 +114,7 @@
   (let ((url (erc-tweet-correct-url (thing-at-point 'url))))
     (when url
       (url-queue-retrieve url
-                          'erc-tweet
+                          'erc-tweet-callback
                           (list
                            (point-max-marker))
                           t))))
