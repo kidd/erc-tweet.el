@@ -68,6 +68,11 @@
 (defvar erc-tweet-cleanup-text 'erc-tweet-strip-tags)
 
 
+(defun erc-tweet-decode-entities (html)
+  (with-temp-buffer
+    (save-excursion (insert html))
+    (xml-parse-string)))
+
 (defun erc-tweet-insert (msg marker)
   "Insert MSG before MARKER."
   (with-current-buffer (marker-buffer marker)
@@ -75,7 +80,7 @@
       (let ((inhibit-read-only t))
         (goto-char (marker-position marker))
         (let ((pt-before (point)))
-          (insert-before-markers msg)
+          (insert-before-markers (erc-tweet-decode-entities msg))
           (put-text-property pt-before (point) 'read-only t))))))
 
 (defun erc-tweet-error (error-info marker)
